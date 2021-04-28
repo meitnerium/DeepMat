@@ -61,20 +61,26 @@ def getob(mol):
     return OB
 
 def getdescriptors(mol):
-
+    # https://www.nature.com/articles/s41598-018-27344-x
     #patt = Chem.MolFromSmarts('N-N(=O)-O')
+    desc = []
+    descval = []
     patt = Chem.MolFromSmarts('N-N(=O)-O')
     print("test for NNO2")
     print(mol.HasSubstructMatch(patt))
     fragment = mol.GetSubstructMatches(patt)
-    print(len(fragment))
+    NNO2 = len(fragment)
+    print(NNO2)
     print(fragment)
+    desc.append('NNO2')
+    descval.append(NNO2)
 
     patt = Chem.MolFromSmarts('C-N(=O)-O')
     print("test for CNO2")
     print(mol.HasSubstructMatch(patt))
     fragment = mol.GetSubstructMatches(patt)
-    print(len(fragment))
+    CNO2 = len(fragment)
+    print(len(CNO2))
     print(fragment)
 
     patt = Chem.MolFromSmarts('O-N(=O)-O')
@@ -91,9 +97,72 @@ def getdescriptors(mol):
     fragment = mol.GetSubstructMatches(patt)
     # ONO2 groupment count has 2 NO2
     NO2=len(fragment)-ONO2
-    print(len(fragment))
+    print(NO2)
     print(fragment)
     
+    patt = Chem.MolFromSmarts('C=N-F')
+    print("test for CNF")
+    print(mol.HasSubstructMatch(patt))
+    fragment = mol.GetSubstructMatches(patt)
+    CNF = len(fragment)
+    print(CNF)
+    print(fragment)
+
+    patt = Chem.MolFromSmarts('C-O-H')
+    print("test for COH")
+    print(mol.HasSubstructMatch(patt))
+    fragment = mol.GetSubstructMatches(patt)
+    COH = len(fragment)
+    print(COH)
+    print(fragment)
+
+    print("test for NOC")
+    frag='N-O-C'
+    fragment = getfrag(frag,mol)
+    NOC = len(fragment)
+    print(NOC)
+
+    print("test for CNO")
+    frag='C=N-O'
+    fragment = getfrag(frag,mol)
+    CNO = len(fragment)
+    print(CNO)
+
+    print("test for CNN")
+    frag='C-N=N'
+    fragment = getfrag(frag,mol)
+    CNN = len(fragment)
+    print(CNN)
+
+    print("test for CNH2")
+    frag='C-N(-H)-H'
+    fragment = getfrag(frag,mol)
+    CNH2 = len(fragment)
+    print(CNH2)
+
+    print("test for CNOC")
+    frag='C-N-O-C'
+    fragment = getfrag(frag,mol)
+    CNOC = len(fragment)
+    print(CNOC)
+
+    print("test for CF")
+    frag='C-F'
+    fragment = getfrag(frag,mol)
+    CF = len(fragment)
+    print(CF)
+
+    print("test for NO")
+    frag='N=O'
+    fragment = getfrag(frag,mol)
+    CF = len(fragment)
+    print(CF)
+
+    print("test for CO")
+    frag='C=O'
+    fragment = getfrag(frag,mol)
+    CO = len(fragment)
+    print(CO)
 
     #patt = Chem.MolFromSmarts('NOO')
     #print("test for nitro")
@@ -102,6 +171,9 @@ def getdescriptors(mol):
     #print(mol.GetSubstructMatch(patt))
     # [N+](=O)[O-]
 
+def getfrag(frag,mol):
+    patt = Chem.MolFromSmarts(frag)
+    return mol.GetSubstructMatches(patt)
 
 import csv
 cids=[] # pubchem compound ID vector
