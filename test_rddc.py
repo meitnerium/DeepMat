@@ -80,7 +80,7 @@ def getdescriptors(mol):
     print(mol.HasSubstructMatch(patt))
     fragment = mol.GetSubstructMatches(patt)
     CNO2 = len(fragment)
-    print(len(CNO2))
+    print(CNO2)
     print(fragment)
 
     patt = Chem.MolFromSmarts('O-N(=O)-O')
@@ -109,8 +109,9 @@ def getdescriptors(mol):
     print(fragment)
 
     patt = Chem.MolFromSmarts('C-O-H')
+    frag='C-O-H'
     print("test for COH")
-    print(mol.HasSubstructMatch(patt))
+    #print(mol.HasSubstructMatch(patt))
     fragment = mol.GetSubstructMatches(patt)
     COH = len(fragment)
     print(COH)
