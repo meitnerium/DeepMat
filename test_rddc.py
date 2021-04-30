@@ -82,6 +82,8 @@ def getdescriptors(mol):
     CNO2 = len(fragment)
     print(CNO2)
     print(fragment)
+    desc.append('CNO2')
+    descval.append(CNO2)
 
     patt = Chem.MolFromSmarts('O-N(=O)-O')
     print("test for ONO2")
@@ -90,6 +92,8 @@ def getdescriptors(mol):
     ONO2 = len(fragment)
     print(ONO2)
     print(fragment)
+    desc.append('ONO2')
+    descval.append(ONO2)
 
     patt = Chem.MolFromSmarts('N(=O)-O')
     print("test for NO2")
@@ -99,6 +103,8 @@ def getdescriptors(mol):
     NO2=len(fragment)-ONO2
     print(NO2)
     print(fragment)
+    desc.append('NO2')
+    descval.append(NO2)
     
     patt = Chem.MolFromSmarts('C=N-F')
     print("test for CNF")
@@ -107,63 +113,89 @@ def getdescriptors(mol):
     CNF = len(fragment)
     print(CNF)
     print(fragment)
+    desc.append('CNF')
+    descval.append(CNF)
 
-    patt = Chem.MolFromSmarts('C-O-H')
-    frag='C-O-H'
-    print("test for COH")
+    # TODO : regler ce probleme
+    # Problem with COH !!!
+    #patt = Chem.MolFromSmarts('C-O-H')
+    #frag='C-O-H'
+    #print("test for COH")
+    #fragment = getfrag(frag,mol)
+    #COH = len(fragment)
     #print(mol.HasSubstructMatch(patt))
-    fragment = mol.GetSubstructMatches(patt)
-    COH = len(fragment)
-    print(COH)
-    print(fragment)
+    #fragment = mol.GetSubstructMatches(patt)
+    #COH = len(fragment)
+    #print(COH)
+    #print(fragment)
+    #desc.append('COH')
+    #descval.append(COH)
 
     print("test for NOC")
     frag='N-O-C'
     fragment = getfrag(frag,mol)
     NOC = len(fragment)
     print(NOC)
+    desc.append('NOC')
+    descval.append(NOC)
 
     print("test for CNO")
     frag='C=N-O'
     fragment = getfrag(frag,mol)
     CNO = len(fragment)
     print(CNO)
+    desc.append('CNO')
+    descval.append(CNO)
 
     print("test for CNN")
     frag='C-N=N'
     fragment = getfrag(frag,mol)
     CNN = len(fragment)
     print(CNN)
+    desc.append('CNO')
+    descval.append(CNO)
 
-    print("test for CNH2")
-    frag='C-N(-H)-H'
-    fragment = getfrag(frag,mol)
-    CNH2 = len(fragment)
-    print(CNH2)
+    # TODO : Error
+    # error with CNH2
+    #print("test for CNH2")
+    #frag='C-N(-H)-H'
+    #fragment = getfrag(frag,mol)
+    #CNH2 = len(fragment)
+    #print(CNH2)
+    #desc.append('')
+    #descval.append()
 
     print("test for CNOC")
     frag='C-N-O-C'
     fragment = getfrag(frag,mol)
     CNOC = len(fragment)
     print(CNOC)
+    desc.append('CNOC')
+    descval.append(CNOC)
 
     print("test for CF")
     frag='C-F'
     fragment = getfrag(frag,mol)
     CF = len(fragment)
     print(CF)
+    desc.append('CF')
+    descval.append(CF)
 
     print("test for NO")
     frag='N=O'
     fragment = getfrag(frag,mol)
-    CF = len(fragment)
-    print(CF)
+    NO = len(fragment)
+    print(NO)
+    desc.append('NO')
+    descval.append(NO)
 
     print("test for CO")
     frag='C=O'
     fragment = getfrag(frag,mol)
     CO = len(fragment)
     print(CO)
+    desc.append('CO')
+    descval.append(CO)
 
     #patt = Chem.MolFromSmarts('NOO')
     #print("test for nitro")
@@ -171,6 +203,7 @@ def getdescriptors(mol):
     #print(mol.HasSubstructMatch(patt))
     #print(mol.GetSubstructMatch(patt))
     # [N+](=O)[O-]
+    return desc,descval
 
 def getfrag(frag,mol):
     patt = Chem.MolFromSmarts(frag)
@@ -182,6 +215,8 @@ names=[] # name vector
 pes=[] #Explosives power vector
 f=open('table.tex','w')
 init_latex(f)
+employee_file = open('employee_file.csv', mode='w')
+employee_writer = csv.writer(employee_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 with open('PE.csv') as csvfile:
     spamreader = csv.reader(csvfile, delimiter=',', quotechar='"')
     n=0
@@ -212,16 +247,24 @@ with open('PE.csv') as csvfile:
                     add_latex(f,pngf,row[0],row[5])
 
                     ob = getob(mol)
-                    nno2 = getdescriptors(mol)
+                    desc,descval = getdescriptors(mol)
+                    desc.insert(0,'cid')
+                    descval.insert(0,row[5])
+
                     #with open('eggs.csv', 'a', newline='') as csvfile:
                     #    spamwriter = csv.writer(csvfile, delimiter=',',
                     #        quotechar='|', quoting=csv.QUOTE_MINIMAL)
                     #        spamwriter.writerow(['cid'] + [str(cid)])
                     #        spamwriter.writerow(['Spam', 'Lovely Spam', 'Wonderful Spam'])
-
+                    if n==1:
+                        employee_writer.writerow(desc)
+                    employee_writer.writerow(descval)
         n=n+1
-
+#employee_writer.close()
 
 end_latex(f)
 f.close()
 
+# to write on csv
+#with open('employee_file.csv', mode='a') as employee_file:
+#    employee_writer = csv.writer(employee_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
