@@ -215,8 +215,8 @@ names=[] # name vector
 pes=[] #Explosives power vector
 f=open('table.tex','w')
 init_latex(f)
-employee_file = open('employee_file.csv', mode='w')
-employee_writer = csv.writer(employee_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+descriptor_file = open('descriptor_file.csv', mode='w')
+descriptor_writer = csv.writer(descriptor_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 with open('PE.csv') as csvfile:
     spamreader = csv.reader(csvfile, delimiter=',', quotechar='"')
     n=0
@@ -257,14 +257,10 @@ with open('PE.csv') as csvfile:
                     #        spamwriter.writerow(['cid'] + [str(cid)])
                     #        spamwriter.writerow(['Spam', 'Lovely Spam', 'Wonderful Spam'])
                     if n==1:
-                        employee_writer.writerow(desc)
-                    employee_writer.writerow(descval)
+                        descriptor_writer.writerow(desc)
+                    descriptor_writer.writerow(descval)
         n=n+1
-#employee_writer.close()
 
 end_latex(f)
 f.close()
 
-# to write on csv
-#with open('employee_file.csv', mode='a') as employee_file:
-#    employee_writer = csv.writer(employee_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
