@@ -1,3 +1,4 @@
+import rdkit
 from rdkit import Chem
 from rdkit.Chem import rdMolDescriptors
 from rdkit.Chem import Descriptors
@@ -31,6 +32,8 @@ def end_latex(f):
     print('OK')
 
 def getob(mol):
+    print("test mol")
+    print(mol)
     print(mol.GetNumAtoms())
     patt = Chem.MolFromSmarts('O')
     print(mol.HasSubstructMatch(patt))
@@ -60,39 +63,143 @@ def getob(mol):
     print("OB = "+str(OB))
     return OB
 
-def getdescriptors(mol):
 
+def getdescriptors(mol):
+    # https://www.nature.com/articles/s41598-018-27344-x
     #patt = Chem.MolFromSmarts('N-N(=O)-O')
+    desc = []
+    descval = []
     patt = Chem.MolFromSmarts('N-N(=O)-O')
     print("test for NNO2")
     print(mol.HasSubstructMatch(patt))
     fragment = mol.GetSubstructMatches(patt)
-    print(len(fragment))
+    NNO2 = len(fragment)
+    print(NNO2)
     print(fragment)
-
-    print(mol.GetSubstructMatch(patt))
+    desc.append('NNO2')
+    descval.append(NNO2)
 
     patt = Chem.MolFromSmarts('C-N(=O)-O')
     print("test for CNO2")
     print(mol.HasSubstructMatch(patt))
     fragment = mol.GetSubstructMatches(patt)
-    print(len(fragment))
+    CNO2 = len(fragment)
+    print(CNO2)
     print(fragment)
+    desc.append('CNO2')
+    descval.append(CNO2)
 
     patt = Chem.MolFromSmarts('O-N(=O)-O')
     print("test for ONO2")
     print(mol.HasSubstructMatch(patt))
     fragment = mol.GetSubstructMatches(patt)
-    print(len(fragment))
+    ONO2 = len(fragment)
+    print(ONO2)
     print(fragment)
+    desc.append('ONO2')
+    descval.append(ONO2)
 
     patt = Chem.MolFromSmarts('N(=O)-O')
     print("test for NO2")
     print(mol.HasSubstructMatch(patt))
     fragment = mol.GetSubstructMatches(patt)
-    print(len(fragment))
+    # ONO2 groupment count has 2 NO2
+    NO2=len(fragment)-ONO2
+    print(NO2)
     print(fragment)
+    desc.append('NO2')
+    descval.append(NO2)
+    
+    patt = Chem.MolFromSmarts('C=N-F')
+    print("test for CNF")
+    print(mol.HasSubstructMatch(patt))
+    fragment = mol.GetSubstructMatches(patt)
+    CNF = len(fragment)
+    print(CNF)
+    print(fragment)
+    desc.append('CNF')
+    descval.append(CNF)
 
+    # TODO : regler ce probleme
+    # Problem with COH !!!
+    #patt = Chem.MolFromSmarts('C-O-H')
+    #frag='C-O-H'
+    #print("test for COH")
+    #fragment = getfrag(frag,mol)
+    #COH = len(fragment)
+    #print(mol.HasSubstructMatch(patt))
+    #fragment = mol.GetSubstructMatches(patt)
+    #COH = len(fragment)
+    #print(COH)
+    #print(fragment)
+    #desc.append('COH')
+    #descval.append(COH)
+
+    print("test for NOC")
+    frag='N-O-C'
+    fragment = getfrag(frag,mol)
+    NOC = len(fragment)
+    print(NOC)
+    desc.append('NOC')
+    descval.append(NOC)
+
+    print("test for CNO")
+    frag='C=N-O'
+    fragment = getfrag(frag,mol)
+    CNO = len(fragment)
+    print(CNO)
+    desc.append('CNO')
+    descval.append(CNO)
+
+    print("test for CNN")
+    frag='C-N=N'
+    fragment = getfrag(frag,mol)
+    CNN = len(fragment)
+    print(CNN)
+    desc.append('CNO')
+    descval.append(CNO)
+
+    # TODO : Error
+    # error with CNH2
+    #print("test for CNH2")
+    #frag='C-N(-H)-H'
+    #fragment = getfrag(frag,mol)
+    #CNH2 = len(fragment)
+    #print(CNH2)
+    #desc.append('')
+    #descval.append()
+
+    print("test for CNOC")
+    frag='C-N-O-C'
+    fragment = getfrag(frag,mol)
+    CNOC = len(fragment)
+    print(CNOC)
+    desc.append('CNOC')
+    descval.append(CNOC)
+
+    print("test for CF")
+    frag='C-F'
+    fragment = getfrag(frag,mol)
+    CF = len(fragment)
+    print(CF)
+    desc.append('CF')
+    descval.append(CF)
+
+    print("test for NO")
+    frag='N=O'
+    fragment = getfrag(frag,mol)
+    NO = len(fragment)
+    print(NO)
+    desc.append('NO')
+    descval.append(NO)
+
+    print("test for CO")
+    frag='C=O'
+    fragment = getfrag(frag,mol)
+    CO = len(fragment)
+    print(CO)
+    desc.append('CO')
+    descval.append(CO)
 
     #patt = Chem.MolFromSmarts('NOO')
     #print("test for nitro")
@@ -100,6 +207,33 @@ def getdescriptors(mol):
     #print(mol.HasSubstructMatch(patt))
     #print(mol.GetSubstructMatch(patt))
     # [N+](=O)[O-]
+    return desc,descval
+
+def getfrag(frag,mol):
+    patt = Chem.MolFromSmarts(frag)
+    return mol.GetSubstructMatches(patt)
+
+def bagofbounds(mol2):
+    from chemml.chem import Molecule
+    #caffeine_smiles = 'CN1C=NC2=C1C(=O)N(C(=O)N2C)C'
+    #caffeine_smarts = '[#6]-[#7]1:[#6]:[#7]:[#6]2:[#6]:1:[#6](=[#8]):[#7](:[#6](=[#8]):[#7]:2-[#6])-[#6]'
+    #caffeine_inchi = 'InChI=1S/C8H10N4O2/c1-10-4-9-6-5(10)7(13)12(3)8(14)11(6)2/h4H,1-3H3'
+    mol = Molecule(Chem.MolToSmiles(mol2),'smiles')
+    mol.hydrogens('add')
+    mol.to_xyz(optimizer='MMFF', mmffVariant='MMFF94s', maxIters=300) # 'UFF'
+    print(mol)
+    mol.visualize()
+    #mol.visualize()
+
+
+
+    from chemml.datasets import load_xyz_polarizability
+    from chemml.chem import BagofBonds
+    #coordinates, y = load_xyz_polarizability(mol)
+    bob = BagofBonds(const= 1.0)
+    features = bob.represent(mol)
+    print(features)
+
 
 def sumoverbound(mol):
     #N-O, N:O, N-N, N=O, N=N, N:N, N#N, C-N, C-C, C-H, C:N, C:C, C-F, C-O, C=O, C=N, C=C, H-O, H-N, F-N.
@@ -121,6 +255,8 @@ names=[] # name vector
 pes=[] #Explosives power vector
 f=open('table.tex','w')
 init_latex(f)
+descriptor_file = open('descriptor_file.csv', mode='w')
+descriptor_writer = csv.writer(descriptor_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 with open('PE.csv') as csvfile:
     spamreader = csv.reader(csvfile, delimiter=',', quotechar='"')
     n=0
@@ -151,14 +287,19 @@ with open('PE.csv') as csvfile:
                     add_latex(f,pngf,row[0],row[5])
 
                     ob = getob(mol)
-                    nno2 = getdescriptors(mol)
-                    sumbound = sumoverbound(mol)
+                    desc,descval = getdescriptors(mol)
+                    desc.insert(0,'cid')
+                    descval.insert(0,row[5])
+                    bagofbounds(mol)
+                    #sumbound = sumoverbound(mol)
                     #with open('eggs.csv', 'a', newline='') as csvfile:
                     #    spamwriter = csv.writer(csvfile, delimiter=',',
                     #        quotechar='|', quoting=csv.QUOTE_MINIMAL)
                     #        spamwriter.writerow(['cid'] + [str(cid)])
                     #        spamwriter.writerow(['Spam', 'Lovely Spam', 'Wonderful Spam'])
-
+                    if n==1:
+                        descriptor_writer.writerow(desc)
+                    descriptor_writer.writerow(descval)
         n=n+1
 
 
