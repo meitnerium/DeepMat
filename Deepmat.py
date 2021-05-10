@@ -213,7 +213,7 @@ def getfrag(frag,mol):
     patt = Chem.MolFromSmarts(frag)
     return mol.GetSubstructMatches(patt)
 
-def bagofbounds(mol2):
+def bagofbounds(mol2,maxentry):
     from chemml.chem import Molecule
     #caffeine_smiles = 'CN1C=NC2=C1C(=O)N(C(=O)N2C)C'
     #caffeine_smarts = '[#6]-[#7]1:[#6]:[#7]:[#6]2:[#6]:1:[#6](=[#8]):[#7](:[#6](=[#8]):[#7]:2-[#6])-[#6]'
@@ -233,6 +233,9 @@ def bagofbounds(mol2):
     bob = BagofBonds(const= 1.0)
     features = bob.represent(mol)
     print(features)
+    print("number of entry")
+    print(len(features))
+    return features
 
 
 def sumoverbound(mol):
@@ -260,6 +263,7 @@ descriptor_writer = csv.writer(descriptor_file, delimiter=',', quotechar='"', qu
 with open('PE.csv') as csvfile:
     spamreader = csv.reader(csvfile, delimiter=',', quotechar='"')
     n=0
+    bob=[]
     for row in spamreader:
         if n != 0:
             time.sleep(5)
@@ -290,7 +294,9 @@ with open('PE.csv') as csvfile:
                     desc,descval = getdescriptors(mol)
                     desc.insert(0,'cid')
                     descval.insert(0,row[5])
-                    bagofbounds(mol)
+                    bob.insert(bagofbounds(mol))
+
+                    print("Length of bob")
                     #sumbound = sumoverbound(mol)
                     #with open('eggs.csv', 'a', newline='') as csvfile:
                     #    spamwriter = csv.writer(csvfile, delimiter=',',
@@ -301,7 +307,17 @@ with open('PE.csv') as csvfile:
                         descriptor_writer.writerow(desc)
                     descriptor_writer.writerow(descval)
         n=n+1
+max=0
 
+for i in range(len(bob[:,0])):
+    if len(bob[i,:]) > max:
+        max=len(bob[i,:])
+
+
+for i in range(len(bob[:,0])):
+    if len(bob[i,:]) < max:
+        toinsert=zeros(max-len(bob[i,:]))
+        bob,insert(toinsert)
 
 end_latex(f)
 f.close()
