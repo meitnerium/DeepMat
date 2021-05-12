@@ -11,6 +11,7 @@ import cirpy
 #import sys
 #import glob
 import time
+import numpy as np
 
 # get SDF
 #c = pcp.Compound.from_cid(n, record_type='3d')
@@ -213,6 +214,7 @@ def getfrag(frag,mol):
     patt = Chem.MolFromSmarts(frag)
     return mol.GetSubstructMatches(patt)
 
+
 def bagofbounds(mol2,maxentry):
     from chemml.chem import Molecule
     #caffeine_smiles = 'CN1C=NC2=C1C(=O)N(C(=O)N2C)C'
@@ -234,8 +236,10 @@ def bagofbounds(mol2,maxentry):
     features = bob.represent(mol)
     print(features)
     print("number of entry")
-    print(len(features))
-    return features
+    print(features.shape[1])
+    if features.shape[1] > maxentry:
+        maxentry = features.shape[1]
+    return features,maxentry
 
 
 def sumoverbound(mol):
@@ -260,10 +264,12 @@ f=open('table.tex','w')
 init_latex(f)
 descriptor_file = open('descriptor_file.csv', mode='w')
 descriptor_writer = csv.writer(descriptor_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+maxentry=1
+bob = np.array([1,1])
+m=0
 with open('PE.csv') as csvfile:
     spamreader = csv.reader(csvfile, delimiter=',', quotechar='"')
     n=0
-    bob=[]
     for row in spamreader:
         if n != 0:
             time.sleep(5)
@@ -294,7 +300,14 @@ with open('PE.csv') as csvfile:
                     desc,descval = getdescriptors(mol)
                     desc.insert(0,'cid')
                     descval.insert(0,row[5])
-                    bob.insert(bagofbounds(mol))
+                    bob2insert,maxentry = bagofbounds(mol,maxentry)
+                    print("maxentry")
+                    print(maxentry)
+                    bob.resize([m+1,maxentry])
+                    bob[m,:bob2insert.shape[1]] = bob2insert
+                    m = m + 1
+                    #bob2inesrt = np.array(bob2insert)
+                    #bob.append(bob2insert)
 
                     print("Length of bob")
                     #sumbound = sumoverbound(mol)
@@ -307,17 +320,17 @@ with open('PE.csv') as csvfile:
                         descriptor_writer.writerow(desc)
                     descriptor_writer.writerow(descval)
         n=n+1
-max=0
+#max=0
 
+#for i in range(len(bob[:,0])):
+#    if len(bob[i,:]) > max:
+#        max=len(bob[i,:])
+
+print(bob.shape)
 for i in range(len(bob[:,0])):
-    if len(bob[i,:]) > max:
-        max=len(bob[i,:])
-
-
-for i in range(len(bob[:,0])):
-    if len(bob[i,:]) < max:
-        toinsert=zeros(max-len(bob[i,:]))
-        bob,insert(toinsert)
+    if len(bob[i,:]) < maxentry:
+        toinsert=zeros(maxentry-len(bob[i,:]))
+        bob.append(toinsert)
 
 end_latex(f)
 f.close()
